@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from 'motion/react';
 
-export function EnvelopeOpening({ onComplete, onMusicStart }: { onComplete: () => void, onMusicStart?: () => void }) {
+export function EnvelopeOpening({ onComplete, onMusicStart, guestName }: { onComplete: () => void, onMusicStart?: () => void, guestName?: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showButton, setShowButton] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -27,6 +27,8 @@ export function EnvelopeOpening({ onComplete, onMusicStart }: { onComplete: () =
         className="absolute w-full h-full object-cover transition-opacity duration-1000"
         style={{ opacity: isPlaying ? 1 : 0.3 }}
         playsInline
+        preload="auto"
+        muted
         onEnded={handleVideoEnd}
       />
       
@@ -39,6 +41,11 @@ export function EnvelopeOpening({ onComplete, onMusicStart }: { onComplete: () =
             className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm z-10"
           >
             <div className="w-[1px] h-24 bg-gradient-to-b from-transparent to-brand-gold/50 mb-8" />
+            {guestName && (
+              <p className="text-brand-gold font-serif italic text-xl sm:text-2xl mb-8 px-6 text-center drop-shadow">
+                Dear {guestName.replace(/^dear\s+/i, '')}
+              </p>
+            )}
             <button
               onClick={handleStart}
               className="px-10 py-4 bg-transparent border border-brand-gold/40 text-brand-gold font-sans uppercase tracking-[0.4em] text-xs hover:bg-brand-gold hover:text-white transition-all duration-700 rounded-full shadow-[0_0_30px_rgba(197,160,89,0.1)]"

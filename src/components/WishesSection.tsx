@@ -1,50 +1,32 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Loader2, Sparkles } from 'lucide-react';
+import { Send, Loader2, Sparkles, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import { submitToSheet } from '../lib/sheets';
 
-interface Wish {
-  id: string;
-  name: string;
-  message: string;
-  createdAt: Date;
-}
-
-const getRelativeTime = (date: Date) => {
-  const diff = Date.now() - date.getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
-};
-
-export const WishesSection: React.FC = () => {
-  const [wishes, setWishes] = useState<Wish[]>([]);
-  const [formData, setFormData] = useState({ name: '', message: '' });
+export const WishesSection: React.FC<{ guestName?: string }> = ({ guestName = '' }) => {
+  const [formData, setFormData] = useState({ name: guestName, message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.message) return;
+    if (!formData.name.trim() || !formData.message.trim()) return;
     setIsSubmitting(true);
 
     try {
-      // Simulate network request latency
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      const newWish: Wish = {
-        id: Date.now().toString(),
-        name: formData.name,
-        message: formData.message,
-        createdAt: new Date(),
-      };
-      
-      // Prepend the new wish to the list
-      setWishes(prev => [newWish, ...prev]);
-      setFormData({ name: '', message: '' });
+      await submitToSheet('WISHES', {
+        name: formData.name.trim(),
+        message: formData.message.trim(),
+        invitedAs: guestName,
+      });
+      // Wishes are saved privately to the sheet; they are not shown on the page.
+      setFormData({ name: guestName, message: '' });
+      setSent(true);
+      toast.success('Thank you! Your blessing has been sent to the couple.');
     } catch (error) {
       console.error('Error submitting wish: ', error);
+      toast.error('Could not send your wishes. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -74,12 +56,34 @@ export const WishesSection: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1, ease: 'easeOut' }}
-          className="w-full glass p-8 sm:p-14 rounded-[3rem] border border-white/60 shadow-[0_30px_60px_rgba(197,160,89,0.1)] relative overflow-hidden bg-white/70 backdrop-blur-3xl mb-16"
+          className="w-full glass p-8 sm:p-14 rounded-[3rem] border border-white/60 shadow-[0_30px_60px_rgba(197,160,89,0.1)] relative overflow-hidden bg-white/70 backdrop-blur-3xl"
         >
           {/* Subtle top reflection line */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-gold to-transparent opacity-50" />
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <AnimatePresence mode="wait">
+          {sent ? (
+            <motion.div
+              key="sent"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center py-8"
+            >
+              <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-6" />
+              <h3 className="text-3xl sm:text-4xl font-display text-brand-mocha mb-4">Thank You</h3>
+              <p className="text-brand-sand/90 font-serif italic text-lg mb-8">
+                Your heartfelt wishes have been sent to the couple.
+              </p>
+              <button
+                onClick={() => setSent(false)}
+                className="px-6 py-2 rounded-full border border-brand-gold/30 text-brand-mocha font-sans text-[10px] tracking-[0.2em] uppercase hover:bg-brand-gold/10 transition-all duration-300 shadow-sm"
+              >
+                Send Another Wish
+              </button>
+            </motion.div>
+          ) : (
+          <motion.form key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onSubmit={handleSubmit} className="space-y-8">
             <div className="text-center mb-10">
               <p className="text-brand-sand font-serif italic text-lg leading-relaxed max-w-lg mx-auto">
                 Leave a little note or a piece of advice for our journey ahead.
@@ -92,7 +96,7 @@ export const WishesSection: React.FC = () => {
                 <input
                   required
                   type="text"
-                  placeholder="E.g., Uncle John"
+                  placeholder="Your name"
                   className="w-full bg-white/80 px-6 py-4 rounded-full border border-stone-200/60 focus:ring-2 focus:ring-brand-gold/30 focus:border-brand-mocha/40 outline-none transition-all duration-300 font-serif italic text-lg shadow-inner placeholder:text-stone-300 text-brand-mocha"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -127,34 +131,11 @@ export const WishesSection: React.FC = () => {
                 )}
               </button>
             </div>
-          </form>
+          </motion.form>
+          )}
+          </AnimatePresence>
         </motion.div>
 
-        {/* Wishes List - Stacked Centrally Below */}
-        <div className="w-full space-y-6 max-h-[800px] overflow-y-auto pr-4 scrollbar-thin">
-          <AnimatePresence initial={false}>
-            {wishes.map((wish) => (
-              <motion.div
-                key={wish.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="glass p-8 sm:p-10 rounded-3xl border border-brand-gold/20 shadow-sm relative overflow-hidden group bg-white/50 backdrop-blur-sm"
-              >
-                <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-brand-mocha/20 to-brand-gold/40 group-hover:from-brand-mocha group-hover:to-brand-gold transition-all duration-500" />
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-4 mb-4">
-                  <h4 className="font-display text-2xl text-brand-mocha tracking-tight pl-2">{wish.name}</h4>
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-brand-sand font-bold bg-white/60 px-3 py-1 rounded-full border border-stone-100/50">
-                    {wish.createdAt ? getRelativeTime(wish.createdAt) : 'just now'}
-                  </span>
-                </div>
-                <p className="text-brand-sand font-serif italic text-lg sm:text-lg leading-relaxed pl-2">
-                  "{wish.message}"
-                </p>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
       </div>
     </div>
   );
