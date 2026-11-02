@@ -23,7 +23,8 @@ export function EnvelopeOpening({ onComplete, onMusicStart, guestName }: { onCom
     <div className="fixed inset-0 bg-[#061e14] z-[100] flex items-center justify-center overflow-hidden">
       <video
         ref={videoRef}
-        src="/images/greenopening.mp4"
+        src="/images/opening.mp4"
+        poster="/images/opening-poster.webp"
         className="absolute w-full h-full object-cover transition-opacity duration-1000"
         style={{ opacity: isPlaying ? 1 : 0.3 }}
         playsInline

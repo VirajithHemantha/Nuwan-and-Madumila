@@ -20,7 +20,9 @@ export const Hero: React.FC<{ guestName?: string }> = ({ guestName = '' }) => {
         style={{ y: y1, scale }}
       >
         <img
-          src="/images/a.jpg"
+          src="/images/a.webp"
+          fetchPriority="high"
+          decoding="async"
           alt={`${WEDDING.groomName} and ${WEDDING.brideName}`}
           className="w-full h-full object-cover opacity-90"
           style={{ objectPosition: 'center 20%' }}
@@ -79,7 +81,7 @@ export const Hero: React.FC<{ guestName?: string }> = ({ guestName = '' }) => {
           {/* Subtle top decoration */}
           <div className="flex items-center gap-3 mb-6 sm:mb-8">
             <div className="h-[1px] w-12 sm:w-16 bg-gradient-to-l from-brand-gold/60 to-transparent" />
-            <img src="/ornament.png" alt="" className="w-8 h-8 object-contain opacity-70" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+            <img src="/ornament.webp" width={32} height={32} alt="" className="w-8 h-8 object-contain opacity-70" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
             <div className="h-[1px] w-12 sm:w-16 bg-gradient-to-r from-brand-gold/60 to-transparent" />
           </div>
 

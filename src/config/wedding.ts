@@ -29,4 +29,5 @@ export const WEDDING = {
 export const COUPLE_NAMES = `${WEDDING.groomName} & ${WEDDING.brideName}`;
 
 // Google Apps Script web app URL (set VITE_GOOGLE_APPS_SCRIPT_URL in .env / hosting env vars)
-export const APPS_SCRIPT_URL = (import.meta.env?.VITE_GOOGLE_APPS_SCRIPT_URL as string | undefined) || '';
+export const APPS_SCRIPT_URL = (import.meta.env?.VITE_GOOGLE_APPS_SCRIPT_URL as string | undefined) ||
+  'https://script.google.com/macros/s/AKfycbweEAba1qJzqV_E_HEIG-9QRVSJi5gtoCYIj4iS1hTg8IFoLJwbJd07_ku2LkXVEMDN/exec';

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Music, VolumeX, Heart } from 'lucide-react';
 import { Toaster } from 'sonner';
@@ -13,14 +13,16 @@ import { Countdown } from './components/Countdown';
 import { RSVPForm } from './components/RSVPForm';
 import { WishesSection } from './components/WishesSection';
 import { DecorativeDivider } from './components/DecorativeDivider';
-import { AdminPage } from './components/AdminPage';
 import { WEDDING, COUPLE_NAMES } from './config/wedding';
 import { getGuestNameFromPath } from './lib/guest';
+
+// Admin page is code-split so guests never download it.
+const AdminPage = lazy(() => import('./components/AdminPage').then((m) => ({ default: m.AdminPage })));
 
 const isAdminRoute = () => /^\/admin\/?$/i.test(window.location.pathname);
 
 export default function App() {
-  if (isAdminRoute()) return <AdminPage />;
+  if (isAdminRoute()) return <Suspense fallback={null}><AdminPage /></Suspense>;
   return <Invitation />;
 }
 
@@ -31,10 +33,10 @@ function Invitation() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    audioRef.current = new Audio('/paulyudin-wedding-485932.mp3');
+    audioRef.current = new Audio('/wedding-music.mp3');
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
-    audioRef.current.preload = 'auto';
+    audioRef.current.preload = 'none';
 
     return () => {
       if (audioRef.current) {
