@@ -95,7 +95,7 @@ export const CoupleDetails: React.FC = () => {
           <div className="mb-4 flex flex-col items-center lg:items-start">
             <span className="text-brand-mocha uppercase tracking-[0.4em] text-[10px] font-bold mb-3 block">The Bride</span>
             <h3 className="text-4xl sm:text-5xl font-display text-brand-mocha mb-2 drop-shadow-sm">{WEDDING.brideName}</h3>
-            <p className="text-brand-sand/90 font-serif italic text-base sm:text-lg">Daughter of Mr. K.D.M.D. Senarathna<br />& Mrs. Y.G. Hemalatha</p>
+            <p className="text-brand-sand/90 font-serif italic text-base sm:text-lg">Daughter of Mr. K.V. Senarathna<br />& Mrs. Y.G. Hemalatha</p>
           </div>
           <div className="hidden lg:flex justify-start mt-8">
             <Heart className="w-6 h-6 text-brand-gold/60 fill-brand-gold/20 transform hover:scale-110 transition-transform cursor-pointer" />

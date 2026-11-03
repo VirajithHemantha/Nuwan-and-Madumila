@@ -6,7 +6,7 @@ export const WEDDING = {
   brideName: 'Madhumila',
 
   groomParents: 'Mr. A.G. Gunasena & Mrs. A.P. Deepa Shanthi',
-  brideParents: 'Mr. K.D.M.D. Senarathna & Mrs. Y.G. Hemalatha',
+  brideParents: 'Mr. K.V. Senarathna & Mrs. Y.G. Hemalatha',
 
   // Friday, 11 December 2026 — Poruwa ceremony at 10:06 AM (Sri Lanka time)
   date: new Date('2026-12-11T10:06:00+05:30'),
